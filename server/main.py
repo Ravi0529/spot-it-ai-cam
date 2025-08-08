@@ -108,24 +108,23 @@ async def process_video(video_path: str, object_to_find: str):
         _, buffer = cv2.imencode(".jpg", frame)
         encoded_image = base64.b64encode(buffer).decode("utf-8")
         encoded_frames.append((idx, encoded_image))
-    prompt = f"""
-    I'm providing {len(encoded_frames)} frames from a video in chronological order. 
-    Please analyze these frames to track the movement and location of the {object_to_find}.
-    
-    For each frame:
-    1. Identify if the {object_to_find} is present
-    2. If present, describe its exact location (e.g., "top-left corner near the window", 
-       "center of screen on the desk", "bottom-right being held by a person")
-    3. Note any significant changes in position or appearance
-    
-    Finally, provide a summary of:
-    - Where the {object_to_find} first appears
-    - How it moves through the scene (direction, path)
-    - Where it last appears
-    - Any important interactions or changes
-    
-    Frame timestamps (in seconds): {[idx/fps for idx, _ in frames]}
-    """
+        prompt = f"""
+            You are given a video file. The query is: "{object_to_find}".
+
+            Your ONLY task:
+            - If the object in the query is visible, answer "Yes" and describe:
+                • Its exact location in the scene.
+                • The timestamps when it appears, moves, or disappears.
+                • Relevant nearby objects for context.
+            - If not visible, answer "No" and say: "The object was not found in the video."
+            - Do NOT describe unrelated parts of the video.
+            - Keep the answer short, factual, and focused only on the object in the query.
+
+            Example:
+            Query: "Can you see my laptop?"
+            AI Response: "Yes. Seen at 00:06 on the bed with a patterned mattress, open and connected by a black cable. Last visible at 00:10 near the dark brown headboard."
+            """
+
     # Create HumanMessage with all frames and prompt
     content = [{"type": "text", "text": prompt}]
     for _, encoded_image in encoded_frames:
