@@ -109,20 +109,35 @@ async def process_video(video_path: str, object_to_find: str):
         encoded_image = base64.b64encode(buffer).decode("utf-8")
         encoded_frames.append((idx, encoded_image))
         prompt = f"""
-            You are given a video file. The query is: "{object_to_find}".
+            You are analyzing a video for the presence of a specific object. The query is: "{object_to_find}".
 
             Your ONLY task:
-            - If the object in the query is visible, answer "Yes" and describe:
-                • Its exact location in the scene.
-                • The timestamps when it appears, moves, or disappears.
-                • Relevant nearby objects for context.
-            - If not visible, answer "No" and say: "The object was not found in the video."
-            - Do NOT describe unrelated parts of the video.
-            - Keep the answer short, factual, and focused only on the object in the query.
+            1. Determine if the object in the query is visible in any frame provided.
+            2. If visible, answer "Yes" and:
+            - Describe its **exact location** in the scene with clear reference points.
+            - Give **timestamps** (approximate to the nearest second) when it first appears, changes position, or disappears.
+            - Mention any **relevant surrounding objects** or context that help identify it.
+            - Provide a short, factual description in **2 to 3 sentences max**.
+            3. If NOT visible, answer "No" and say: "The object was not found in the video."
+            4. Do NOT talk about unrelated objects, people, or background unless they help locate the object.
 
-            Example:
+            Be factual, concise, and specific.
+
+            Example 1:
             Query: "Can you see my laptop?"
-            AI Response: "Yes. Seen at 00:06 on the bed with a patterned mattress, open and connected by a black cable. Last visible at 00:10 near the dark brown headboard."
+            AI Response: "Yes. Seen at 00:06 on the bed with a patterned mattress, open and connected by a black cable. Last visible at 00:10 near the dark brown headboard with a phone placed beside it."
+
+            Example 2:
+            Query: "Is there a red car?"
+            AI Response: "Yes. First appears at 00:03 on the left side of the street beside a white van. Moves to the center of the frame by 00:07 before leaving the scene at 00:09."
+
+            Example 3:
+            Query: "Can you see my black backpack?"
+            AI Response: "No. The object was not found in the video."
+
+            Example 4:
+            Query: "Do you see a white dog?"
+            AI Response: "Yes. Appears at 00:02 near the wooden fence on the right side of the garden. Stays in view until 00:05, playing with a red ball near a metal chair."
             """
 
     # Create HumanMessage with all frames and prompt
