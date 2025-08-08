@@ -1,0 +1,17 @@
+.git
+.gitignore
+README.md
+.env
+node_modules
+*.log
+.DS_Store
+__pycache__
+.python-version
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.coverage
+.vscode
+.idea
+*.log
