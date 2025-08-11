@@ -43,7 +43,7 @@ A powerful AI-powered video analysis system that can detect and locate specific 
 
    ```bash
    git clone https://github.com/Ravi0529/spot-it-ai-cam.git
-   cd SpotIt-AI-cam
+   cd spot-it-ai-cam
    ```
 
 2. **Set up environment variables**
